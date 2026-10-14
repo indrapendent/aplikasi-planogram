@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Planogram & Store Layout Simulator - Alfamart Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-store text-2xl text-red-500"></i>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">Retail Planogram & Layout Simulator</h1>
+                    <p class="text-xs text-slate-400">100 Real Products Database (Alfamart/Indomaret Edition)</p>
+                </div>
+            </div>
+            
+            <div class="flex space-x-2 bg-slate-800 p-1 rounded-lg text-xs">
+                <button onclick="switchView('planogram')" id="tab-planogram" class="px-4 py-1.5 rounded-md font-bold bg-red-600 text-white transition">
+                    <i class="fa-solid fa-layer-group mr-1"></i>Shelf Planogram (Rak)
+                </button>
+                <button onclick="switchView('layout')" id="tab-layout" class="px-4 py-1.5 rounded-md font-bold text-slate-300 hover:text-white transition">
+                    <i class="fa-solid fa-map-location-dot mr-1"></i>Store Floorplan (Heatmap)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 space-y-6">
+
+        <!-- ================= VIEW 1: SHELF PLANOGRAM EDITOR ================= -->
+        <section id="view-planogram" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left: Shelf Display (2 Cols) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <div>
+                        <h2 class="font-bold text-lg text-slate-800">Simulasi Rak Gondola 4 Tingkat</h2>
+                        <p class="text-xs text-slate-500">Pindahkan produk ke tingkatan rak yang sesuai prinsip Visual Merchandising.</p>
+                    </div>
+                    <button onclick="autoOptimizePlanogram()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Auto-Optimize
+                    </button>
+                </div>
+
+                <!-- 4 Level Shelf Stack -->
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    
+                    <!-- Level 4: Top Shelf -->
+                    <div class="bg-white p-3 rounded-lg border border-slate-300 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-600 flex items-center"><i class="fa-solid fa-arrow-up-long text-slate-400 mr-2"></i>Level 4: Top Level (Reach-Level)</span>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold">Produk Premium / Niche / Slow Moving</span>
+                        </div>
+                        <div id="shelf-3" ondragover="allowDrop(event)" ondrop="dropProduct(event, 3)" class="min-h-[80px] max-h-[160px] overflow-y-auto bg-slate-100/70 border-2 border-dashed border-slate-300 rounded-lg p-2 flex flex-wrap gap-2 items-center">
+                            <!-- Items Drop Target -->
+                        </div>
+                    </div>
+
+                    <!-- Level 3: Eye Level (GOLDEN ZONE) -->
+                    <div class="bg-amber-50/60 p-3 rounded-lg border-2 border-amber-300 shadow-sm relative overflow-hidden">
+                        <div class="absolute right-0 top-0 bg-amber-400 text-amber-950 font-black text-[9px] px-3 py-0.5 rounded-bl-lg uppercase tracking-wider">Golden Zone</div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-amber-900 flex items-center"><i class="fa-solid fa-eye text-amber-600 mr-2"></i>Level 3: Eye Level (Tinggi 120 - 150 cm)</span>
+                            <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-bold">Margin Tinggi & Best Seller Impulse</span>
+                        </div>
+                        <div id="shelf-2" ondragover="allowDrop(event)" ondrop="dropProduct(event, 2)" class="min-h-[80px] max-h-[160px] overflow-y-auto bg-amber-100/50 border-2 border-dashed border-amber-300 rounded-lg p-2 flex flex-wrap gap-2 items-center">
+                            <!-- Items Drop Target -->
+                        </div>
+                    </div>
+
+                    <!-- Level 2: Touch Level -->
+                    <div class="bg-white p-3 rounded-lg border border-slate-300 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-600 flex items-center"><i class="fa-solid fa-hand-pointer text-slate-400 mr-2"></i>Level 2: Touch Level (Tinggi 90 - 120 cm)</span>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold">Kebutuhan Anak / Produk Harian</span>
+                        </div>
+                        <div id="shelf-1" ondragover="allowDrop(event)" ondrop="dropProduct(event, 1)" class="min-h-[80px] max-h-[160px] overflow-y-auto bg-slate-100/70 border-2 border-dashed border-slate-300 rounded-lg p-2 flex flex-wrap gap-2 items-center">
+                            <!-- Items Drop Target -->
+                        </div>
+                    </div>
+
+                    <!-- Level 1: Bottom Level -->
+                    <div class="bg-white p-3 rounded-lg border border-slate-300 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-600 flex items-center"><i class="fa-solid fa-arrow-down-long text-slate-400 mr-2"></i>Level 1: Bottom Level (Tinggi <70 cm)</span>
+                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold">Ukuran Besar / Berat / Pokok (Destination)</span>
+                        </div>
+                        <div id="shelf-0" ondragover="allowDrop(event)" ondrop="dropProduct(event, 0)" class="min-h-[80px] max-h-[160px] overflow-y-auto bg-slate-100/70 border-2 border-dashed border-slate-300 rounded-lg p-2 flex flex-wrap gap-2 items-center">
+                            <!-- Items Drop Target -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right: Product Catalog & Metrics (1 Col) -->
+            <div class="space-y-4">
+                
+                <!-- Planogram Performance Score -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-sm text-slate-800 border-b pb-2"><i class="fa-solid fa-chart-pie text-red-600 mr-2"></i>Performa Planogram Rak</h3>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-500">Est. Penjualan/Hari</p>
+                            <h4 id="est-sales" class="text-xl font-black text-emerald-600">Rp 0</h4>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-slate-500">Skor Layout</p>
+                            <span id="planogram-score" class="text-lg font-bold px-3 py-1 bg-slate-100 text-slate-700 rounded-lg">0 / 100</span>
+                        </div>
+                    </div>
+
+                    <div id="recommendation-box" class="bg-indigo-50 border border-indigo-200 p-3 rounded-xl text-xs text-indigo-900 space-y-1">
+                        <p class="font-bold"><i class="fa-solid fa-lightbulb mr-1"></i>Saran Optimasi:</p>
+                        <p id="rec-text" class="text-[11px] leading-relaxed">Letakkan produk bermargin tinggi di Eye-Level (Level 3).</p>
+                    </div>
+                </div>
+
+                <!-- Product Catalog Unassigned -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-boxes-stacked text-red-600 mr-2"></i>Katalog Produk (<span id="unassigned-count">0</span>)</h3>
+                    </div>
+
+                    <!-- Search & Filter Bar -->
+                    <div class="space-y-2">
+                        <input type="text" id="search-product" oninput="filterProducts()" placeholder="Cari Indomie, Pocari, Silverqueen..." class="w-full px-3 py-1.5 border rounded-lg text-xs focus:ring-2 focus:ring-red-500 outline-none">
+                        
+                        <select id="filter-category" onchange="filterProducts()" class="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-slate-700 outline-none">
+                            <option value="ALL">Semua Kategori</option>
+                            <option value="Minuman">Minuman (Beverages)</option>
+                            <option value="Makanan Ringan">Makanan Ringan (Snacks)</option>
+                            <option value="Sembako & Kebutuhan">Sembako & Kebutuhan Dapur</option>
+                            <option value="Perawatan Diri">Perawatan Diri (Personal Care)</option>
+                            <option value="Kebutuhan Rumah">Kebutuhan Rumah Tangga</option>
+                        </select>
+                    </div>
+                    
+                    <div id="unassigned-products" class="grid grid-cols-1 gap-2 max-h-[360px] overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= VIEW 2: STORE FLOORPLAN & HEATMAP ================= -->
+        <section id="view-layout" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Store Floorplan Grid (2 Cols) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <div>
+                        <h2 class="font-bold text-lg text-slate-800">Denah Toko & Visual Heatmap</h2>
+                        <p class="text-xs text-slate-500">Klik sel pada denah untuk mengubah zona area toko (Pintu, Kasir, Rak, atau Area RTE).</p>
+                    </div>
+                    <div class="flex space-x-2 text-[10px]">
+                        <span class="flex items-center px-2 py-1 bg-red-100 text-red-800 rounded font-bold"><i class="fa-solid fa-fire mr-1"></i>Hot Zone</span>
+                        <span class="flex items-center px-2 py-1 bg-blue-100 text-blue-800 rounded font-bold"><i class="fa-solid fa-snowflake mr-1"></i>Cold Zone</span>
+                    </div>
+                </div>
+
+                <!-- 6x6 Floorplan Grid -->
+                <div id="floorplan-grid" class="grid grid-cols-6 gap-2 bg-slate-800 p-4 rounded-2xl border-4 border-slate-900 shadow-inner">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-slate-500 pt-2">
+                    <span class="flex items-center"><i class="fa-solid fa-person-walking text-emerald-500 mr-1.5 text-base"></i>Alur Masuk Pengunjung</span>
+                    <span class="flex items-center"><i class="fa-solid fa-cash-register text-red-500 mr-1.5 text-base"></i>Area Checkout Kasir</span>
+                </div>
+            </div>
+
+            <!-- Floorplan Rules & Legend (1 Col) -->
+            <div class="space-y-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-sm text-slate-800 border-b pb-2"><i class="fa-solid fa-palette text-indigo-600 mr-2"></i>Pilihan Zona Area</h3>
+                    
+                    <div class="space-y-2">
+                        <button onclick="setBrush('ENTRANCE')" id="brush-ENTRANCE" class="w-full text-left p-2.5 rounded-xl border flex items-center justify-between text-xs font-bold transition bg-emerald-50 border-emerald-400 text-emerald-900">
+                            <span class="flex items-center"><i class="fa-solid fa-door-open mr-2 text-emerald-600"></i>Pintu Masuk (Entrance)</span>
+                            <span class="text-[10px] bg-emerald-200 px-1.5 py-0.5 rounded">Awal</span>
+                        </button>
+                        <button onclick="setBrush('RTE')" id="brush-RTE" class="w-full text-left p-2.5 rounded-xl border flex items-center justify-between text-xs font-bold transition border-slate-200 text-slate-700 hover:bg-slate-50">
+                            <span class="flex items-center"><i class="fa-solid fa-mug-hot mr-2 text-amber-600"></i>Bean Spot / RTE / Fast Food</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Hotspot</span>
+                        </button>
+                        <button onclick="setBrush('GONDOLA')" id="brush-GONDOLA" class="w-full text-left p-2.5 rounded-xl border flex items-center justify-between text-xs font-bold transition border-slate-200 text-slate-700 hover:bg-slate-50">
+                            <span class="flex items-center"><i class="fa-solid fa-cubes mr-2 text-indigo-600"></i>Rak Gondola (Produk)</span>
+                            <span class="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded">Display</span>
+                        </button>
+                        <button onclick="setBrush('KASIR')" id="brush-KASIR" class="w-full text-left p-2.5 rounded-xl border flex items-center justify-between text-xs font-bold transition border-slate-200 text-slate-700 hover:bg-slate-50">
+                            <span class="flex items-center"><i class="fa-solid fa-cash-register mr-2 text-red-600"></i>Meja Kasir & Impulse Shelf</span>
+                            <span class="text-[10px] bg-red-100 text-red-800 px-1.5 py-0.5 rounded">Checkout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs text-amber-900 space-y-2">
+                    <h4 class="font-bold flex items-center"><i class="fa-solid fa-graduation-cap text-amber-700 mr-2"></i>Tips Layout Alfamart</h4>
+                    <p class="text-[11px] leading-relaxed">
+                        Item pokok berukuran besar (seperti Beras atau Minyak 2L) diletakkan di **Cold Zone** (belakang toko) agar pengunjung berjalan melewati seluruh lorong rak sebelum mengambil kebutuhan pokoknya.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC WITH 100 REAL PRODUCTS DATABASE -->
+    <script>
+        // 100 Real Products Database (Alfamart / Indomaret Real Items)
+        const RAW_PRODUCTS = [
+            // Minuman (Beverages)
+            { id: 'p1', name: 'Pocari Sweat Botol 500ml', category: 'Minuman', price: 9200, margin: 0.35, idealLevel: 2, icon: 'fa-bottle-water', color: 'bg-blue-600' },
+            { id: 'p2', name: 'Aqua Air Mineral 600ml', category: 'Minuman', price: 3800, margin: 0.15, idealLevel: 1, icon: 'fa-bottle-water', color: 'bg-blue-400' },
+            { id: 'p3', name: 'Aqua Air Mineral 1500ml (Botol Besar)', category: 'Minuman', price: 6900, margin: 0.12, idealLevel: 0, icon: 'fa-bottle-water', color: 'bg-blue-800' },
+            { id: 'p4', name: 'Teh Pucuk Harum 350ml', category: 'Minuman', price: 4000, margin: 0.38, idealLevel: 2, icon: 'fa-wine-bottle', color: 'bg-emerald-600' },
+            { id: 'p5', name: 'Teh Botol Sosro Kotak 250ml', category: 'Minuman', price: 3500, margin: 0.25, idealLevel: 1, icon: 'fa-box-tissue', color: 'bg-red-600' },
+            { id: 'p6', name: 'Ultra Milk Rasa Cokelat 250ml', category: 'Minuman', price: 7200, margin: 0.28, idealLevel: 1, icon: 'fa-box-tissue', color: 'bg-amber-700' },
+            { id: 'p7', name: 'Bear Brand Susu Steril 189ml', category: 'Minuman', price: 10500, margin: 0.20, idealLevel: 2, icon: 'fa-bottle-droplet', color: 'bg-slate-500' },
+            { id: 'p8', name: 'Nescafe Can Original 240ml', category: 'Minuman', price: 11000, margin: 0.42, idealLevel: 2, icon: 'fa-mug-saucer', color: 'bg-amber-900' },
+            { id: 'p9', name: 'Good Day Mochacinno Botol 250ml', category: 'Minuman', price: 7500, margin: 0.40, idealLevel: 2, icon: 'fa-wine-bottle', color: 'bg-red-500' },
+            { id: 'p10', name: 'You C1000 Lemon 140ml', category: 'Minuman', price: 8500, margin: 0.35, idealLevel: 2, icon: 'fa-bottle-water', color: 'bg-yellow-500' },
+            { id: 11, name: 'Yakult Minuman Fermentasi (Pack 5s)', category: 'Minuman', price: 10800, margin: 0.18, idealLevel: 1, icon: 'fa-box-tissue', color: 'bg-red-400' },
+            { id: 12, name: 'Coca Cola Botol 390ml', category: 'Minuman', price: 5800, margin: 0.30, idealLevel: 2, icon: 'fa-wine-bottle', color: 'bg-red-700' },
+            { id: 13, name: 'Sprite Botol 390ml', category: 'Minuman', price: 5800, margin: 0.30, idealLevel: 2, icon: 'fa-wine-bottle', color: 'bg-emerald-500' },
+            { id: 14, name: 'Fanta Strawberry 390ml', category: 'Minuman', price: 5800, margin: 0.30, idealLevel: 2, icon: 'fa-wine-bottle', color: 'bg-pink-600' },
+            { id: 15, name: 'Cimory Yoghurt Drink Strawberry 240ml', category: 'Minuman', price: 9500, margin: 0.38, idealLevel: 2, icon: 'fa-bottle-droplet', color: 'bg-pink-500' },
+            { id: 16, name: 'Hydro Coco Original 250ml', category: 'Minuman', price: 7800, margin: 0.32, idealLevel: 2, icon: 'fa-box-tissue', color: 'bg-emerald-600' },
+            { id: 17, name: 'Kopiko 78 Cokelat Botol 240ml', category: 'Minuman', price: 7000, margin: 0.36, idealLevel: 2, icon: 'fa-wine-bottle', color: 'bg-amber-800' },
+            { id: 18, name: 'Mizone Apple Guava 500ml', category: 'Minuman', price: 6200, margin: 0.30, idealLevel: 1, icon: 'fa-bottle-water', color: 'bg-cyan-600' },
+            { id: 19, name: 'Nutriboost Orange 300ml', category: 'Minuman', price: 7500, margin: 0.32, idealLevel: 2, icon: 'fa-bottle-water', color: 'bg-orange-500' },
+            { id: 20, name: 'Teh Gelas Cup 220ml', category: 'Minuman', price: 1500, margin: 0.20, idealLevel: 0, icon: 'fa-cup-straw', color: 'bg-amber-600' },
+
+            // Makanan Ringan (Snacks)
+            { id: 21, name: 'Chitato Sapi Panggang 68g', category: 'Makanan Ringan', price: 12500, margin: 0.42, idealLevel: 2, icon: 'fa-cookie-bite', color: 'bg-orange-600' },
+            { id: 22, name: 'Lay\'s / Lays Rumput Laut 55g', category: 'Makanan Ringan', price: 11800, margin: 0.40, idealLevel: 2, icon: 'fa-cookie-bite', color: 'bg-yellow-500' },
+            { id: 23, name: 'Pringles Original 107g', category: 'Makanan Ringan', price: 24500, margin: 0.50, idealLevel: 3, icon: 'fa-box', color: 'bg-red-600' },
+            { id: 24, name: 'Silverqueen Milk Chocolate 58g', category: 'Makanan Ringan', price: 16500, margin: 0.48, idealLevel: 2, icon: 'fa-candy-cane', color: 'bg-amber-800' },
+            { id: 25, name: 'Cadbury Dairy Milk 62g', category: 'Makanan Ringan', price: 17200, margin: 0.48, idealLevel: 2, icon: 'fa-candy-cane', color: 'bg-purple-700' },
+            { id: 26, name: 'Oreo Vanilla Roll 119.6g', category: 'Makanan Ringan', price: 10200, margin: 0.35, idealLevel: 2, icon: 'fa-cookie', color: 'bg-blue-700' },
+            { id: 27, name: 'Beng Beng Chocolate Bar 20g', category: 'Makanan Ringan', price: 2800, margin: 0.45, idealLevel: 1, icon: 'fa-candy-cane', color: 'bg-red-600' },
+            { id: 28, name: 'Tango Wafer Cokelat 130g', category: 'Makanan Ringan', price: 9800, margin: 0.35, idealLevel: 1, icon: 'fa-box', color: 'bg-red-500' },
+            { id: 29, name: 'Roma Malkist Abon 135g', category: 'Makanan Ringan', price: 8500, margin: 0.30, idealLevel: 1, icon: 'fa-cookie', color: 'bg-amber-600' },
+            { id: 30, name: 'Kusuka Keripik Singkong Balado 180g', category: 'Makanan Ringan', price: 17500, margin: 0.38, idealLevel: 2, icon: 'fa-cookie-bite', color: 'bg-red-700' },
+            { id: 31, name: 'Piattos Sapi Panggang 75g', category: 'Makanan Ringan', price: 11200, margin: 0.38, idealLevel: 2, icon: 'fa-cookie-bite', color: 'bg-blue-600' },
+            { id: 32, name: 'Kuro Pocky Chocolate 40g', category: 'Makanan Ringan', price: 9500, margin: 0.45, idealLevel: 2, icon: 'fa-candy-cane', color: 'bg-red-800' },
+            { id: 33, name: 'Kacang Garuda Atom 130g', category: 'Makanan Ringan', price: 11500, margin: 0.32, idealLevel: 1, icon: 'fa-cookie', color: 'bg-red-600' },
+            { id: 34, name: 'Kinder Joy Boy/Girl 20g', category: 'Makanan Ringan', price: 15500, margin: 0.52, idealLevel: 1, icon: 'fa-gift', color: 'bg-amber-400' },
+            { id: 35, name: 'Milo Nugget Chocolate 15g', category: 'Makanan Ringan', price: 7800, margin: 0.40, idealLevel: 1, icon: 'fa-candy-cane', color: 'bg-emerald-700' },
+            { id: 36, name: 'Khong Guan Biscuit Red Can 1600g', category: 'Makanan Ringan', price: 115000, margin: 0.25, idealLevel: 0, icon: 'fa-box', color: 'bg-red-700' },
+            { id: 37, name: 'Kopiko Candy Pack 150g', category: 'Makanan Ringan', price: 9200, margin: 0.35, idealLevel: 1, icon: 'fa-candy-cane', color: 'bg-amber-900' },
+            { id: 38, name: 'Yupi Gummy Bears 45g', category: 'Makanan Ringan', price: 5200, margin: 0.42, idealLevel: 1, icon: 'fa-candy-cane', color: 'bg-pink-500' },
+            { id: 39, name: 'Tic Tac Dua Kelinci Nasi Goreng 90g', category: 'Makanan Ringan', price: 6800, margin: 0.30, idealLevel: 1, icon: 'fa-cookie-bite', color: 'bg-orange-500' },
+            { id: 40, name: 'Taro Net Seaweed 36g', category: 'Makanan Ringan', price: 5500, margin: 0.35, idealLevel: 1, icon: 'fa-cookie-bite', color: 'bg-emerald-600' },
+
+            // Sembako & Kebutuhan Dapur (Staples)
+            { id: 41, name: 'Indomie Goreng Original 85g', category: 'Sembako & Kebutuhan', price: 3100, margin: 0.12, idealLevel: 1, icon: 'fa-bowl-food', color: 'bg-red-600' },
+            { id: 42, name: 'Indomie Kuah Ayam Bawang 75g', category: 'Sembako & Kebutuhan', price: 3000, margin: 0.12, idealLevel: 1, icon: 'fa-bowl-food', color: 'bg-yellow-600' },
+            { id: 43, name: 'Samyang Green Buldak Spicy 140g', category: 'Sembako & Kebutuhan', price: 21500, margin: 0.40, idealLevel: 3, icon: 'fa-fire', color: 'bg-black' },
+            { id: 44, name: 'Minyak Goreng Bimoli Refill 2 Liter', category: 'Sembako & Kebutuhan', price: 38500, margin: 0.08, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-amber-500' },
+            { id: 45, name: 'Minyak Goreng Sania Refill 2 Liter', category: 'Sembako & Kebutuhan', price: 37200, margin: 0.08, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-yellow-500' },
+            { id: 46, name: 'Beras Premium Ramos Alfamart 5kg', category: 'Sembako & Kebutuhan', price: 74500, margin: 0.05, idealLevel: 0, icon: 'fa-box', color: 'bg-emerald-700' },
+            { id: 47, name: 'Gulaku Gula Pasir Putih 1kg', category: 'Sembako & Kebutuhan', price: 17500, margin: 0.08, idealLevel: 0, icon: 'fa-box', color: 'bg-emerald-500' },
+            { id: 48, name: 'Kecap Manis Bango Botol 135ml', category: 'Sembako & Kebutuhan', price: 11500, margin: 0.20, idealLevel: 1, icon: 'fa-bottle-droplet', color: 'bg-amber-950' },
+            { id: 49, name: 'Kecap Manis ABC Refill 520ml', category: 'Sembako & Kebutuhan', price: 18200, margin: 0.18, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-amber-900' },
+            { id: 50, name: 'Saus Sambal Extra Pedas ABC 135ml', category: 'Sembako & Kebutuhan', price: 8200, margin: 0.22, idealLevel: 1, icon: 'fa-bottle-droplet', color: 'bg-red-600' },
+            { id: 51, name: 'Mentega Blue Band Serbaguna 200g', category: 'Sembako & Kebutuhan', price: 12500, margin: 0.22, idealLevel: 1, icon: 'fa-box', color: 'bg-yellow-400' },
+            { id: 52, name: 'Susu Kental Manis Frisian Flag Cokelat 370g', category: 'Sembako & Kebutuhan', price: 12800, margin: 0.18, idealLevel: 1, icon: 'fa-box', color: 'bg-amber-800' },
+            { id: 53, name: 'Susu Bubuk Dancow Fortigro 390g', category: 'Sembako & Kebutuhan', price: 48500, margin: 0.15, idealLevel: 1, icon: 'fa-box', color: 'bg-yellow-500' },
+            { id: 54, name: 'Tepung Terigu Segitiga Biru 1kg', category: 'Sembako & Kebutuhan', price: 13200, margin: 0.10, idealLevel: 0, icon: 'fa-box', color: 'bg-blue-600' },
+            { id: 55, name: 'Garam Dapur Cap Kapal 250g', category: 'Sembako & Kebutuhan', price: 3500, margin: 0.15, idealLevel: 0, icon: 'fa-box', color: 'bg-slate-400' },
+            { id: 56, name: 'Masako Rasa Sapi Renteng (12x10g)', category: 'Sembako & Kebutuhan', price: 6000, margin: 0.20, idealLevel: 1, icon: 'fa-box', color: 'bg-red-600' },
+            { id: 57, name: 'Santan Kelapa Sun Kara 65ml', category: 'Sembako & Kebutuhan', price: 3200, margin: 0.22, idealLevel: 1, icon: 'fa-box', color: 'bg-emerald-600' },
+            { id: 58, name: 'Sarden ABC Cabai Hijau 155g', category: 'Sembako & Kebutuhan', price: 11200, margin: 0.25, idealLevel: 1, icon: 'fa-box', color: 'bg-emerald-700' },
+            { id: 59, name: 'Kopi Kapal Api Mantap Sachet 10s', category: 'Sembako & Kebutuhan', price: 14500, margin: 0.18, idealLevel: 1, icon: 'fa-box', color: 'bg-red-800' },
+            { id: 60, name: 'Teh Celup SariWangi 25s', category: 'Sembako & Kebutuhan', price: 7800, margin: 0.20, idealLevel: 1, icon: 'fa-box', color: 'bg-blue-700' },
+
+            // Perawatan Diri (Personal Care)
+            { id: 61, name: 'Pepsodent Toothpaste Herbal 190g', category: 'Perawatan Diri', price: 18500, margin: 0.30, idealLevel: 1, icon: 'fa-tooth', color: 'bg-emerald-600' },
+            { id: 62, name: 'Sikat Gigi Formula Double Action 3s', category: 'Perawatan Diri', price: 14200, margin: 0.40, idealLevel: 1, icon: 'fa-tooth', color: 'bg-blue-600' },
+            { id: 63, name: 'Sabun Lifebuoy Total 10 Red 110g', category: 'Perawatan Diri', price: 5200, margin: 0.25, idealLevel: 1, icon: 'fa-soap', color: 'bg-red-600' },
+            { id: 64, name: 'Sabun Mandi Cair Biore Guard 450ml Refill', category: 'Perawatan Diri', price: 24500, margin: 0.32, idealLevel: 0, icon: 'fa-shower', color: 'bg-blue-500' },
+            { id: 65, name: 'Shampoo Pantene Anti Dandruff 160ml', category: 'Perawatan Diri', price: 28900, margin: 0.35, idealLevel: 2, icon: 'fa-pump-soap', color: 'bg-amber-600' },
+            { id: 66, name: 'Shampoo Clear Ice Cool Menthol 160ml', category: 'Perawatan Diri', price: 29500, margin: 0.35, idealLevel: 2, icon: 'fa-pump-soap', color: 'bg-blue-700' },
+            { id: 67, name: 'Garnier Men AcnoFight Face Wash 100ml', category: 'Perawatan Diri', price: 34500, margin: 0.45, idealLevel: 3, icon: 'fa-pump-soap', color: 'bg-black' },
+            { id: 68, name: 'Biore Facial Foam Bright & Oil Clear 100g', category: 'Perawatan Diri', price: 29800, margin: 0.42, idealLevel: 2, icon: 'fa-pump-soap', color: 'bg-cyan-600' },
+            { id: 69, name: 'Rexona Men Deodorant Roll On 50ml', category: 'Perawatan Diri', price: 21500, margin: 0.40, idealLevel: 2, icon: 'fa-spray-can', color: 'bg-slate-700' },
+            { id: 70, name: 'Nivea Body Lotion Extra White 200ml', category: 'Perawatan Diri', price: 31200, margin: 0.45, idealLevel: 3, icon: 'fa-pump-soap', color: 'bg-blue-900' },
+            { id: 71, name: 'Tissue Paseo Soft Pack 250s', category: 'Perawatan Diri', price: 18900, margin: 0.28, idealLevel: 1, icon: 'fa-box-tissue', color: 'bg-pink-400' },
+            { id: 72, name: 'Minyak Kayu Putih Cap Lang 60ml', category: 'Perawatan Diri', price: 26500, margin: 0.30, idealLevel: 2, icon: 'fa-bottle-droplet', color: 'bg-emerald-700' },
+            { id: 73, name: 'Hansaplast Plester Kain Roll 1.25cm', category: 'Perawatan Diri', price: 8500, margin: 0.45, idealLevel: 1, icon: 'fa-briefcase-medical', color: 'bg-red-500' },
+            { id: 74, name: 'Laurier Double Comfort Wing 16s', category: 'Perawatan Diri', price: 17500, margin: 0.32, idealLevel: 1, icon: 'fa-box', color: 'bg-teal-600' },
+            { id: 75, name: 'Gillette Vector Razor Pisau Cukur', category: 'Perawatan Diri', price: 28500, margin: 0.48, idealLevel: 2, icon: 'fa-hand', color: 'bg-blue-800' },
+            { id: 76, name: 'Vaseline Petroleum Jelly 50ml', category: 'Perawatan Diri', price: 28000, margin: 0.45, idealLevel: 3, icon: 'fa-box', color: 'bg-blue-600' },
+            { id: 77, name: 'Mytol Antiseptik Liquid 100ml', category: 'Perawatan Diri', price: 19500, margin: 0.35, idealLevel: 2, icon: 'fa-bottle-droplet', color: 'bg-orange-600' },
+            { id: 78, name: 'Baby Oil Cussons Mild & Gentle 100ml', category: 'Perawatan Diri', price: 18200, margin: 0.35, idealLevel: 1, icon: 'fa-bottle-droplet', color: 'bg-blue-400' },
+            { id: 79, name: 'Sapu Tangan Wipes Mitu Baby 50s', category: 'Perawatan Diri', price: 16500, margin: 0.30, idealLevel: 1, icon: 'fa-box-tissue', color: 'bg-blue-300' },
+            { id: 80, name: 'Minyak Telon Lang 100ml', category: 'Perawatan Diri', price: 38500, margin: 0.28, idealLevel: 1, icon: 'fa-bottle-droplet', color: 'bg-emerald-500' },
+
+            // Kebutuhan Rumah Tangga (Household)
+            { id: 81, name: 'Deterjen Rinso Anti Noda Powder 770g', category: 'Kebutuhan Rumah', price: 23500, margin: 0.20, idealLevel: 0, icon: 'fa-box', color: 'bg-emerald-600' },
+            { id: 82, name: 'Deterjen Molto Liquid Parfum 780ml', category: 'Kebutuhan Rumah', price: 21500, margin: 0.22, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-pink-600' },
+            { id: 83, name: 'Sunlight Pencuci Piring Jeruk Nipis 700ml', category: 'Kebutuhan Rumah', price: 15800, margin: 0.25, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-emerald-500' },
+            { id: 84, name: 'Pembersih Lantai Super Pell Apple 770ml', category: 'Kebutuhan Rumah', price: 14500, margin: 0.25, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-emerald-600' },
+            { id: 85, name: 'Wipol Karbol Wangi Pine 780ml', category: 'Kebutuhan Rumah', price: 18200, margin: 0.25, idealLevel: 0, icon: 'fa-bottle-droplet', color: 'bg-emerald-800' },
+            { id: 86, name: 'Baygon Semprot Obat Nyamuk Citrus 600ml', category: 'Kebutuhan Rumah', price: 42500, margin: 0.32, idealLevel: 1, icon: 'fa-spray-can', color: 'bg-emerald-700' },
+            { id: 87, name: 'Stella Air Freshener Orange Can 225ml', category: 'Kebutuhan Rumah', price: 22800, margin: 0.38, idealLevel: 2, icon: 'fa-spray-can', color: 'bg-orange-500' },
+            { id: 88, name: 'Pembalut Sikat Cuci Baju Plastic', category: 'Kebutuhan Rumah', price: 7500, margin: 0.45, idealLevel: 0, icon: 'fa-box', color: 'bg-blue-500' },
+            { id: 89, name: 'Lampu LED Hannochs 9 Watt White', category: 'Kebutuhan Rumah', price: 28500, margin: 0.45, idealLevel: 3, icon: 'fa-lightbulb', color: 'bg-yellow-500' },
+            { id: 90, name: 'Baterai ABC Alkaline AA Pack 4s', category: 'Kebutuhan Rumah', price: 23500, margin: 0.50, idealLevel: 2, icon: 'fa-battery-full', color: 'bg-black' },
+            { id: 91, name: 'Sponge Cuci Piring Scotch Brite 2s', category: 'Kebutuhan Rumah', price: 11500, margin: 0.40, idealLevel: 1, icon: 'fa-box', color: 'bg-emerald-500' },
+            { id: 92, name: 'Kapur Barus Bagus Naphball 150g', category: 'Kebutuhan Rumah', price: 16200, margin: 0.35, idealLevel: 1, icon: 'fa-box', color: 'bg-pink-500' },
+            { id: 93, name: 'Penyerap Lembap Serat Bagus Absorb 450ml', category: 'Kebutuhan Rumah', price: 18500, margin: 0.40, idealLevel: 1, icon: 'fa-box', color: 'bg-cyan-600' },
+            { id: 94, name: 'Plastik Sampah Hitam Roll 50x60cm', category: 'Kebutuhan Rumah', price: 14500, margin: 0.35, idealLevel: 0, icon: 'fa-box', color: 'bg-slate-900' },
+            { id: 95, name: 'Kain Lap Microfiber Multiuse 1s', category: 'Kebutuhan Rumah', price: 12800, margin: 0.45, idealLevel: 1, icon: 'fa-box', color: 'bg-blue-600' },
+            { id: 96, name: 'Korek Api Gas Tokai Original', category: 'Kebutuhan Rumah', price: 4500, margin: 0.50, idealLevel: 2, icon: 'fa-fire', color: 'bg-red-600' },
+            { id: 97, name: 'Sapu Ijuk Gagang Kayu Standard', category: 'Kebutuhan Rumah', price: 27500, margin: 0.30, idealLevel: 0, icon: 'fa-broom', color: 'bg-amber-800' },
+            { id: 98, name: 'Pengki Plastik Serbaguna', category: 'Kebutuhan Rumah', price: 16500, margin: 0.35, idealLevel: 0, icon: 'fa-box', color: 'bg-blue-600' },
+            { id: 99, name: 'Pembersih Kaca Cling Spray 440ml', category: 'Kebutuhan Rumah', price: 11200, margin: 0.30, idealLevel: 0, icon: 'fa-spray-can', color: 'bg-cyan-500' },
+            { id: 100, name: 'Kamper Toilet Swallow Ball 5s', category: 'Kebutuhan Rumah', price: 13500, margin: 0.38, idealLevel: 1, icon: 'fa-box', color: 'bg-purple-500' }
+        ];
+
+        // App State
+        let shelfState = [[], [], [], []];
+        let unassignedProducts = [...RAW_PRODUCTS];
+        let filteredUnassigned = [...RAW_PRODUCTS];
+
+        // Floorplan Grid State (6x6)
+        let activeBrush = 'ENTRANCE';
+        let floorGrid = Array(36).fill('EMPTY');
+        floorGrid[0] = 'ENTRANCE';
+        floorGrid[1] = 'RTE';
+        floorGrid[13] = 'GONDOLA';
+        floorGrid[14] = 'GONDOLA';
+        floorGrid[35] = 'KASIR';
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUnassignedProducts();
+            renderShelves();
+            calculatePlanogramScore();
+            renderFloorGrid();
+        });
+
+        // View Switching
+        function switchView(view) {
+            document.getElementById('view-planogram').classList.add('hidden');
+            document.getElementById('view-layout').classList.add('hidden');
+            document.getElementById('tab-planogram').className = "px-4 py-1.5 rounded-md font-bold text-slate-300 hover:text-white transition";
+            document.getElementById('tab-layout').className = "px-4 py-1.5 rounded-md font-bold text-slate-300 hover:text-white transition";
+
+            if (view === 'planogram') {
+                document.getElementById('view-planogram').classList.remove('hidden');
+                document.getElementById('tab-planogram').className = "px-4 py-1.5 rounded-md font-bold bg-red-600 text-white transition";
+            } else {
+                document.getElementById('view-layout').classList.remove('hidden');
+                document.getElementById('tab-layout').className = "px-4 py-1.5 rounded-md font-bold bg-red-600 text-white transition";
+            }
+        }
+
+        // Filter and Search
+        function filterProducts() {
+            const query = document.getElementById('search-product').value.toLowerCase();
+            const cat = document.getElementById('filter-category').value;
+
+            filteredUnassigned = unassignedProducts.filter(p => {
+                const matchQuery = p.name.toLowerCase().includes(query);
+                const matchCat = cat === 'ALL' || p.category === cat;
+                return matchQuery && matchCat;
+            });
+
+            renderUnassignedProducts();
+        }
+
+        // Render Unassigned Catalog List
+        function renderUnassignedProducts() {
+            const container = document.getElementById('unassigned-products');
+            document.getElementById('unassigned-count').innerText = unassignedProducts.length;
+
+            if (filteredUnassigned.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-400 py-6 text-xs font-semibold">Tidak ada produk ditemukan</div>`;
+                return;
+            }
+
+            container.innerHTML = filteredUnassigned.map(p => `
+                <div draggable="true" ondragstart="dragProduct(event, '${p.id}')" onclick="assignToBestLevel('${p.id}')" class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm cursor-grab hover:border-red-400 transition flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5 overflow-hidden">
+                        <span class="w-7 h-7 ${p.color} text-white rounded-lg flex-shrink-0 flex items-center justify-center text-xs shadow-sm"><i class="fa-solid ${p.icon}"></i></span>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-xs text-slate-800 truncate leading-tight">${p.name}</p>
+                            <p class="text-[10px] text-slate-400">Rp ${p.price.toLocaleString('id-ID')} | <span class="text-emerald-600 font-bold">Margin ${(p.margin * 100).toFixed(0)}%</span></p>
+                        </div>
+                    </div>
+                    <button class="text-xs text-slate-300 hover:text-red-600 px-1"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // Render Shelves
+        function renderShelves() {
+            for (let level = 0; level < 4; level++) {
+                const shelfEl = document.getElementById(`shelf-${level}`);
+                const items = shelfState[level];
+
+                if (items.length === 0) {
+                    shelfEl.innerHTML = `<span class="text-[11px] text-slate-400 italic pointer-events-none">Tarik atau klik produk untuk meletakkan di sini</span>`;
+                } else {
+                    shelfEl.innerHTML = items.map(p => `
+                        <div draggable="true" ondragstart="dragProduct(event, '${p.id}')" class="bg-white px-2.5 py-1 rounded-lg border border-slate-300 shadow-sm flex items-center space-x-2 text-xs font-bold text-slate-800">
+                            <span class="w-4 h-4 ${p.color} text-white rounded flex items-center justify-center text-[9px]"><i class="fa-solid ${p.icon}"></i></span>
+                            <span class="truncate max-w-[120px]">${p.name}</span>
+                            <button onclick="removeFromShelf('${p.id}')" class="text-slate-300 hover:text-red-500 ml-1 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // Drag and Drop Handlers
+        function dragProduct(event, productId) {
+            event.dataTransfer.setData('text/plain', productId);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function dropProduct(event, targetLevel) {
+            event.preventDefault();
+            const productId = event.dataTransfer.getData('text/plain');
+            moveProductToShelf(productId, targetLevel);
+        }
+
+        function assignToBestLevel(productId) {
+            const product = RAW_PRODUCTS.find(p => p.id == productId);
+            if (product) {
+                moveProductToShelf(productId, product.idealLevel);
+            }
+        }
+
+        function moveProductToShelf(productId, targetLevel) {
+            const product = RAW_PRODUCTS.find(p => p.id == productId);
+            if (!product) return;
+
+            // Remove from current shelf if exists
+            for (let l = 0; l < 4; l++) {
+                shelfState[l] = shelfState[l].filter(p => p.id != productId);
+            }
+            // Remove from unassigned
+            unassignedProducts = unassignedProducts.filter(p => p.id != productId);
+
+            // Add to new shelf
+            shelfState[targetLevel].push(product);
+
+            filterProducts();
+            renderShelves();
+            calculatePlanogramScore();
+        }
+
+        function removeFromShelf(productId) {
+            const product = RAW_PRODUCTS.find(p => p.id == productId);
+            if (!product) return;
+
+            for (let l = 0; l < 4; l++) {
+                shelfState[l] = shelfState[l].filter(p => p.id != productId);
+            }
+            if (!unassignedProducts.some(p => p.id == productId)) {
+                unassignedProducts.push(product);
+            }
+
+            filterProducts();
+            renderShelves();
+            calculatePlanogramScore();
+        }
+
+        // Auto Optimize Planogram Rules
+        function autoOptimizePlanogram() {
+            shelfState = [[], [], [], []];
+            unassignedProducts = [];
+
+            RAW_PRODUCTS.forEach(p => {
+                shelfState[p.idealLevel].push(p);
+            });
+
+            filterProducts();
+            renderShelves();
+            calculatePlanogramScore();
+        }
+
+        // Scoring Logic
+        function calculatePlanogramScore() {
+            let score = 0;
+            let estSales = 0;
+            let eyeLevelItems = shelfState[2]; // Level 3 (Eye Level)
+
+            eyeLevelItems.forEach(p => {
+                if (p.margin >= 0.35) {
+                    score += 5;
+                    estSales += (p.price * 25);
+                } else {
+                    score += 2;
+                    estSales += (p.price * 10);
+                }
+            });
+
+            shelfState[0].forEach(p => {
+                if (p.idealLevel === 0) {
+                    score += 4;
+                    estSales += (p.price * 15);
+                }
+            });
+
+            shelfState[1].concat(shelfState[3]).forEach(p => {
+                score += 2;
+                estSales += (p.price * 8);
+            });
+
+            score = Math.min(100, score);
+
+            document.getElementById('planogram-score').innerText = `${score} / 100`;
+            document.getElementById('planogram-score').className = `text-lg font-bold px-3 py-1 rounded-lg ${score >= 75 ? 'bg-emerald-100 text-emerald-800' : score >= 40 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'}`;
+            document.getElementById('est-sales').innerText = `Rp ${Math.round(estSales).toLocaleString('id-ID')}`;
+
+            const recEl = document.getElementById('rec-text');
+            if (score >= 80) {
+                recEl.innerText = "Sempurna! Susunan rak minimarket sudah memenuhi standar kriteria visual merchandising ritel.";
+            } else if (!shelfState[2].some(p => p.margin >= 0.35)) {
+                recEl.innerText = "Peringatan: Golden Zone (Eye Level) belum diisi produk bermargin tinggi seperti Pringles, Skincare, atau Cokelat Import.";
+            } else {
+                recEl.innerText = "Saran: Pindahkan barang berat/pokok (Beras 5kg, Minyak 2L, Galon) ke dasar rak (Level 1).";
+            }
+        }
+
+        // Floorplan Heatmap Logic
+        function setBrush(type) {
+            activeBrush = type;
+            ['ENTRANCE', 'RTE', 'GONDOLA', 'KASIR'].forEach(t => {
+                document.getElementById(`brush-${t}`).className = "w-full text-left p-2.5 rounded-xl border flex items-center justify-between text-xs font-bold transition border-slate-200 text-slate-700 hover:bg-slate-50";
+            });
+            document.getElementById(`brush-${type}`).className = "w-full text-left p-2.5 rounded-xl border flex items-center justify-between text-xs font-bold transition bg-emerald-50 border-emerald-400 text-emerald-900";
+        }
+
+        function renderFloorGrid() {
+            const container = document.getElementById('floorplan-grid');
+            container.innerHTML = floorGrid.map((cell, idx) => {
+                let colorClass = "bg-slate-700 hover:bg-slate-600 text-slate-400";
+                let label = "";
+
+                if (cell === 'ENTRANCE') {
+                    colorClass = "bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/50";
+                    label = '<i class="fa-solid fa-door-open text-lg"></i>';
+                } else if (cell === 'RTE') {
+                    colorClass = "bg-amber-500 text-white font-bold shadow-lg shadow-amber-500/50";
+                    label = '<i class="fa-solid fa-mug-hot text-lg"></i>';
+                } else if (cell === 'GONDOLA') {
+                    colorClass = "bg-indigo-600 text-white font-bold";
+                    label = '<i class="fa-solid fa-cubes text-base"></i>';
+                } else if (cell === 'KASIR') {
+                    colorClass = "bg-red-600 text-white font-bold shadow-lg shadow-red-600/50";
+                    label = '<i class="fa-solid fa-cash-register text-lg"></i>';
+                }
+
+                return `
+                    <button onclick="clickCell(${idx})" class="h-16 rounded-xl ${colorClass} flex flex-col items-center justify-center transition text-xs font-bold p-1">
+                        ${label}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function clickCell(idx) {
+            floorGrid[idx] = floorGrid[idx] === activeBrush ? 'EMPTY' : activeBrush;
+            renderFloorGrid();
+        }
+    </script>
+</body>
+</html>
